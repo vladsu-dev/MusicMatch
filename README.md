@@ -150,14 +150,14 @@ MatchScore = (MusicSimilarity * 0.4) + (PsychologyCompatibility * 0.35) + (Behav
 
 ## 📄 Лицензия
 
-Этот проект распространяется под лицензией MIT. См. файл `LICENSE` для деталей.
+Этот проект распространяется под лицензией. См. файл `LICENSE` для деталей.
 
 ## 👥 Авторы
 
-- **Первый тип** - [GitHub](https://github.com/vladsu-dev)
-- **Второй тип**
-- **Третий тип**
+- **Vlasislav_Subarev** - [GitHub](https://github.com/vladsu-dev)
+- **Kirill_Svitov** - [GitHub](https://github.com/kirillsvi)
+- **Kirill_Denisov** - [GitHub](https://github.com/hkkcxzq)
 
 ---
 
-**MusicMatch** - найдите свою вторую половинку через музыку! 🎵❤️
+**MusicMatch** - найдите свою компанию через музыку! 🎵❤️
