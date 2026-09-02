@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Получаем параметры подключения из переменных окружения
-DB_USER = os.getenv('DB_USER', 'user')
+DB_USER = os.getenv('DB_USER', 'musicmatch')
 DB_PASSWORD = os.getenv('DB_PASSWORD', 'password')
 DB_HOST = os.getenv('DB_HOST', 'localhost')
 DB_NAME = os.getenv('DB_NAME', 'musicmatch')

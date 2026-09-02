@@ -1101,6 +1101,42 @@
     width: 17px;
     height: 17px;
   }
+
+  /* ==========================================================
+     Уведомления
+     ========================================================== */
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    padding: 15px 20px;
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    animation: slideIn 0.3s ease;
+  }
+
+  .notification.success {
+    background: #2ed573;
+  }
+
+  .notification.error {
+    background: #ff4757;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
 </style>
 </head>
 <body>
@@ -1268,7 +1304,7 @@
 
 <section class="cta-band wrap" id="cta">
   <h2>Твой следующий разговор может начаться с одного трека</h2>
-  <a href="#" class="btn btn-primary">Начать слушать</a>
+  <a href="#" class="btn btn-primary" id="ctaAuthBtn">Начать слушать</a>
 </section>
 
 <footer>
@@ -1414,6 +1450,7 @@ tasteTracks.forEach(t=>{
 // ---------- модальное окно входа / регистрации ----------
 const authModal = document.getElementById('authModal');
 const headerAuthBtn = document.getElementById('headerAuthBtn');
+const ctaAuthBtn = document.getElementById('ctaAuthBtn');
 const authClose = document.getElementById('authClose');
 const authTabs = document.querySelectorAll('.auth-tab');
 const authForms = document.querySelectorAll('.auth-form');
@@ -1435,6 +1472,12 @@ function setAuthTab(tab){
 }
 
 headerAuthBtn.addEventListener('click', () => openAuthModal('login'));
+if (ctaAuthBtn) {
+  ctaAuthBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    openAuthModal('register');
+  });
+}
 authClose.addEventListener('click', closeAuthModal);
 authModal.addEventListener('click', (e) => { if(e.target === authModal) closeAuthModal(); });
 document.addEventListener('keydown', (e) => { if(e.key === 'Escape' && authModal.classList.contains('open')) closeAuthModal(); });
@@ -1443,14 +1486,121 @@ authTabs.forEach(tab => {
   tab.addEventListener('click', () => setAuthTab(tab.dataset.tab));
 });
 
-document.getElementById('loginForm').addEventListener('submit', (e) => {
+// ---------- уведомления ----------
+function showNotification(message, type = 'success') {
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.textContent = message;
+  document.body.appendChild(notification);
+
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
+}
+
+// ---------- API интеграция ----------
+const API_BASE_URL = window.location.origin;
+
+async function handleLogin(e) {
   e.preventDefault();
-  closeAuthModal();
-});
-document.getElementById('registerForm').addEventListener('submit', (e) => {
+
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Сохраняем токен
+      localStorage.setItem('auth_token', data.access_token);
+      localStorage.setItem('user_id', data.user_id);
+
+      closeAuthModal();
+      showNotification('Добро пожаловать в Волну!');
+
+      // Перенаправляем на страницу выбора артистов
+      setTimeout(() => {
+        window.location.href = '/select-artists';
+      }, 1000);
+    } else {
+      showNotification(data.error || 'Ошибка входа', 'error');
+    }
+  } catch (error) {
+    showNotification('Ошибка соединения с сервером', 'error');
+  }
+}
+
+async function handleRegister(e) {
   e.preventDefault();
-  closeAuthModal();
-});
+
+  const username = document.getElementById('registerName').value;
+  const email = document.getElementById('registerEmail').value;
+  const password = document.getElementById('registerPassword').value;
+  const gender = document.querySelector('input[name="gender"]:checked').value;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username,
+        email,
+        password,
+        gender,
+        age: null,
+        bio: ''
+      })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Сохраняем токен
+      localStorage.setItem('auth_token', data.access_token);
+      localStorage.setItem('user_id', data.user_id);
+
+      closeAuthModal();
+      showNotification('Регистрация успешна!');
+
+      // Перенаправляем на страницу выбора артистов
+      setTimeout(() => {
+        window.location.href = '/select-artists';
+      }, 1000);
+    } else {
+      showNotification(data.error || 'Ошибка регистрации', 'error');
+    }
+  } catch (error) {
+    showNotification('Ошибка соединения с сервером', 'error');
+  }
+}
+
+// Подключаем обработчики форм
+document.getElementById('loginForm').addEventListener('submit', handleLogin);
+document.getElementById('registerForm').addEventListener('submit', handleRegister);
+
+// Проверяем, авторизован ли пользователь
+function checkAuth() {
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    // Пользователь уже авторизован
+    headerAuthBtn.textContent = 'Продолжить';
+    headerAuthBtn.addEventListener('click', () => {
+      window.location.href = '/swipe';
+    });
+  }
+}
+
+checkAuth();
 </script>
 </body>
 </html>
