@@ -2,7 +2,7 @@
 from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Table, Float, Boolean
 from sqlalchemy.orm import relationship
-from database.database import Base
+from backend.database import Base
 
 
 # Функция для получения текущего времени в UTC
@@ -42,6 +42,10 @@ class User(Base):
     matches_as_user1 = relationship('Match', foreign_keys='Match.user1_id', back_populates='user1')
     matches_as_user2 = relationship('Match', foreign_keys='Match.user2_id', back_populates='user2')
     messages = relationship('Message', back_populates='sender')
+    yandex_music_account = relationship(
+        'YandexMusicAccount', back_populates='user', uselist=False,
+        cascade='all, delete-orphan'
+    )
 
 
 class Artist(Base):
@@ -73,6 +77,33 @@ class MusicProfile(Base):
 
     # Отношения
     user = relationship('User', back_populates='music_profile')
+
+
+class YandexMusicAccount(Base):
+    """
+    Подключённый аккаунт Яндекс.Музыки для конкретного пользователя.
+
+    Токены хранятся ТОЛЬКО в зашифрованном виде (см. backend/crypto_utils.py).
+    Не добавляйте сюда поля с токенами в открытом виде и не логируйте
+    содержимое access_token_encrypted / refresh_token_encrypted.
+    """
+    __tablename__ = 'yandex_music_accounts'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), unique=True, nullable=False, index=True)
+
+    access_token_encrypted = Column(Text, nullable=False)
+    refresh_token_encrypted = Column(Text, nullable=True)
+    token_type = Column(String(50), default='bearer')
+    expires_at = Column(DateTime(timezone=True), nullable=True)
+
+    connected_at = Column(DateTime(timezone=True), default=utcnow)
+    last_synced_at = Column(DateTime(timezone=True), nullable=True)
+    last_sync_status = Column(String(20), default='never')  # never | success | error
+    last_sync_error = Column(Text, nullable=True)
+
+    # Отношения
+    user = relationship('User', back_populates='yandex_music_account')
 
 
 class Swipe(Base):
