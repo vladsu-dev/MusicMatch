@@ -19,7 +19,7 @@ import logging
 from typing import Callable, List, Optional
 
 from yandex_music import Client as YandexClient
-from yandex_music.exceptions import UnauthorizedError, YandexMusicError, TimedOut
+from yandex_music.exceptions import UnauthorizedError, YandexMusicError, TimedOutError
 
 from backend.music_providers.base import (
     DeviceAuthCode,
@@ -86,14 +86,14 @@ class YandexMusicProvider(MusicProviderClient):
             client.init()
         except UnauthorizedError as exc:
             raise YandexMusicAuthError('Токен Яндекс.Музыки недействителен или истёк') from exc
-        except (TimedOut, YandexMusicError) as exc:
+        except (TimedOutError, YandexMusicError) as exc:
             raise YandexMusicProviderError(f'Не удалось инициализировать клиента: {exc}') from exc
 
         try:
             liked = client.users_likes_tracks()
         except UnauthorizedError as exc:
             raise YandexMusicAuthError('Токен Яндекс.Музыки недействителен или истёк') from exc
-        except (TimedOut, YandexMusicError) as exc:
+        except (TimedOutError, YandexMusicError) as exc:
             raise YandexMusicProviderError(f'Ошибка при получении понравившихся треков: {exc}') from exc
 
         if not liked:
@@ -103,7 +103,7 @@ class YandexMusicProvider(MusicProviderClient):
         for short_track in liked:
             try:
                 full_track = short_track.fetch_track()
-            except TimedOut as exc:
+            except TimedOutError as exc:
                 logger.warning('Таймаут при получении трека — пропускаем: %s', exc)
                 continue
             except YandexMusicError as exc:
