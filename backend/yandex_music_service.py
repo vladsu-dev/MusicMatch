@@ -136,7 +136,12 @@ def sync_favorite_artists(db: Session, user_id: int, force: bool = False) -> dic
         return {'success': False, 'error': 'Яндекс.Музыка не подключена', 'code': 'not_connected'}
 
     if not force and account.last_synced_at:
-        elapsed = _utcnow() - account.last_synced_at
+        # SQLite may store naive datetimes (no tzinfo). Normalize to UTC-aware
+        # to avoid TypeError when subtracting (aware vs naive datetimes).
+        last_synced = account.last_synced_at
+        if getattr(last_synced, 'tzinfo', None) is None:
+            last_synced = last_synced.replace(tzinfo=timezone.utc)
+        elapsed = _utcnow() - last_synced
         if elapsed < MIN_SYNC_INTERVAL:
             retry_after = int((MIN_SYNC_INTERVAL - elapsed).total_seconds())
             return {
@@ -144,7 +149,7 @@ def sync_favorite_artists(db: Session, user_id: int, force: bool = False) -> dic
                 'skipped': True,
                 'reason': 'Синхронизация недавно уже выполнялась',
                 'retry_after_seconds': retry_after,
-                'last_synced_at': account.last_synced_at.isoformat(),
+                'last_synced_at': account.last_synced_at.isoformat() if account.last_synced_at else None,
             }
 
     try:
