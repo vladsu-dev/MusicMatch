@@ -5,10 +5,20 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from database.database import init_db, SessionLocal
 from backend.models import User
 from backend.auth import register_user, login_user
+from backend.yandex_auth_flow import auth_flow_manager
+from backend.yandex_music_service import (
+    disconnect as yandex_disconnect,
+    get_connection_status as yandex_get_connection_status,
+    save_token as yandex_save_token,
+    sync_favorite_artists as yandex_sync_favorite_artists,
+)
+import logging
 import os
 from dotenv import load_dotenv
 from datetime import timedelta
 import bcrypt
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -116,6 +126,93 @@ def create_app():
             }), 200
         finally:
             db.close()
+
+    # ------------------------------------------------------------------
+    # Интеграция с Яндекс.Музыкой
+    #
+    # Библиотека yandex-music-api — неофициальная (LGPL-3.0), см.
+    # THIRD_PARTY_NOTICES.md по лицензии и docs/YANDEX_MUSIC_INTEGRATION.md
+    # по устройству этого флоу (почему авторизация в два шага).
+    # ------------------------------------------------------------------
+
+    @app.route('/api/yandex-music/connect', methods=['POST'])
+    @jwt_required()
+    def api_yandex_music_connect():
+        """Запускает OAuth Device Flow в фоновом потоке и почти сразу
+        отдаёт verification_url + user_code, которые нужно показать пользователю."""
+        user_id = get_jwt_identity()
+        auth_flow_manager.start(user_id)
+        status = auth_flow_manager.get_status(user_id, wait_seconds=3.0)
+        return jsonify(status), 200
+
+    @app.route('/api/yandex-music/connect/status', methods=['GET'])
+    @jwt_required()
+    def api_yandex_music_connect_status():
+        """Фронтенд опрашивает этот эндпоинт, пока status не станет
+        success/error. При success — токен сохраняется в БД (в зашифрованном виде)."""
+        user_id = get_jwt_identity()
+        status = auth_flow_manager.get_status(user_id, wait_seconds=2.0)
+
+        if status.get('status') == 'success':
+            token = auth_flow_manager.pop_token_if_ready(user_id)
+            if token:
+                db = SessionLocal()
+                try:
+                    yandex_save_token(db, user_id, token)
+                finally:
+                    db.close()
+            return jsonify({'status': 'connected'}), 200
+
+        if status.get('status') == 'error':
+            auth_flow_manager.clear_error(user_id)
+
+        return jsonify(status), 200
+
+    @app.route('/api/yandex-music/status', methods=['GET'])
+    @jwt_required()
+    def api_yandex_music_status():
+        """Текущее состояние подключения (для отображения в профиле)."""
+        user_id = get_jwt_identity()
+        db = SessionLocal()
+        try:
+            return jsonify(yandex_get_connection_status(db, user_id)), 200
+        finally:
+            db.close()
+
+    @app.route('/api/yandex-music/sync', methods=['POST'])
+    @jwt_required()
+    def api_yandex_music_sync():
+        """Забирает любимых исполнителей из Яндекс.Музыки и добавляет их в профиль.
+        Ограничен интервалом MIN_SYNC_INTERVAL — см. backend/yandex_music_service.py."""
+        user_id = get_jwt_identity()
+        force = bool((request.get_json(silent=True) or {}).get('force', False))
+        db = SessionLocal()
+        try:
+            result = yandex_sync_favorite_artists(db, user_id, force=force)
+        finally:
+            db.close()
+
+        if not result['success']:
+            status_code = 409 if result.get('code') == 'reauth_required' else 502
+            if result.get('code') == 'not_connected':
+                status_code = 400
+            return jsonify(result), status_code
+
+        return jsonify(result), 200
+
+    @app.route('/api/yandex-music/disconnect', methods=['DELETE'])
+    @jwt_required()
+    def api_yandex_music_disconnect():
+        """Отключает Яндекс.Музыку и удаляет сохранённый токен пользователя."""
+        user_id = get_jwt_identity()
+        db = SessionLocal()
+        try:
+            removed = yandex_disconnect(db, user_id)
+        finally:
+            db.close()
+        if not removed:
+            return jsonify({'error': 'Яндекс.Музыка не была подключена'}), 404
+        return jsonify({'success': True}), 200
 
     # Health check
     @app.route('/api/health')

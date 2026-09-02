@@ -1,5 +1,5 @@
 # backend/auth.py
-from database.database import SessionLocal
+from backend.database import SessionLocal
 from backend.models import User
 import bcrypt
 from datetime import datetime, timezone
