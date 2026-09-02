@@ -29,7 +29,7 @@ def get_engine():
     if _engine is None:
         if not DB_PASSWORD:
             raise RuntimeError(
-                "DB_PASSWORD is required. Copy .env.template to .env and configure PostgreSQL credentials."
+                "DB_PASSWORD обязателен. Скопируйте .env.template в .env и настройте учётные данные PostgreSQL."
             )
 
         database_url = (

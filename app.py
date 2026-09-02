@@ -34,8 +34,8 @@ def _required_env(name: str) -> str:
     value = os.getenv(name)
     if not value:
         raise RuntimeError(
-            f"Environment variable {name!r} is required. "
-            "Copy .env.template to .env and fill in the required values."
+            f"Переменная окружения {name!r} обязательна. "
+            "Скопируйте .env.template в .env и заполните необходимые значения."
         )
     return value
 
