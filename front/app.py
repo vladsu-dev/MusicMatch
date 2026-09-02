@@ -2,7 +2,7 @@
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from database.database import init_db, SessionLocal
+from backend.database import init_db, SessionLocal
 from backend.models import User
 from backend.auth import register_user, login_user
 from backend.yandex_auth_flow import auth_flow_manager

@@ -1,4 +1,4 @@
-"""MusicMatch Flask application entrypoint."""
+"""Точка входа Flask-приложения MusicMatch."""
 
 import logging
 import os

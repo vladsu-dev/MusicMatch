@@ -19,7 +19,7 @@ import logging
 from typing import Callable, List, Optional
 
 from yandex_music import Client as YandexClient
-from yandex_music.exceptions import TimedOut, UnauthorizedError, YandexMusicError
+from yandex_music.exceptions import UnauthorizedError, YandexMusicError, TimedOut
 
 from backend.music_providers.base import (
     DeviceAuthCode,

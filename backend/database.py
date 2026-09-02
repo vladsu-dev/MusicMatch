@@ -1,4 +1,4 @@
-"""Database engine and SQLAlchemy session management."""
+"""Движок базы данных и управление сессиями SQLAlchemy."""
 
 import os
 from urllib.parse import quote_plus
