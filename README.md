@@ -156,7 +156,7 @@ MatchScore = (MusicSimilarity * 0.4) + (PsychologyCompatibility * 0.35) + (Behav
 
 - **Vlasislav_Subarev** - [GitHub](https://github.com/vladsu-dev)
 - **Kirill_Svitov** - [GitHub](https://github.com/kirillsvi)
-- **Kirill_Denisov** - [GitHub](https://github.com/hkkcxzq)
+- **Andrey_Denisov** - [GitHub](https://github.com/hkkcxzq)
 
 ---
 
