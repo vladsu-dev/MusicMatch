@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Волна — знакомства по звучанию</title>
+<title>Music Match</title>
+<link rel="stylesheet" href="./style.css"
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -739,6 +740,7 @@
     border-radius: 40px;
     color: var(--canvas);
     text-align: center;
+    max-width: none;
   }
 
   .cta-band h2 {
@@ -992,46 +994,15 @@
     outline: none;
   }
 
-  .gender-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+  .field-error {
+    min-height: 18px;
+    color: #ff4757;
+    font-size: 12px;
+    line-height: 1.4;
   }
 
-  .gender-option {
-    position: relative;
-  }
-
-  .gender-option input {
-    position: absolute;
-    width: 0;
-    height: 0;
-    opacity: 0;
-  }
-
-  .gender-option span {
-    display: inline-flex;
-    align-items: center;
-    padding: 9px 16px;
-    background: var(--white);
-    border: 1.5px solid var(--canvas-alt);
-    border-radius: 999px;
-    color: var(--ink-soft);
-    font-size: 13.5px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: border-color .18s ease, color .18s ease, background .18s ease;
-  }
-
-  .gender-option input:checked + span {
-    background: var(--blue-soft);
-    border-color: var(--blue);
-    color: var(--ink);
-  }
-
-  .gender-option input:focus-visible + span {
-    outline: 2px solid var(--blue);
-    outline-offset: 2px;
+  .auth-field input.invalid {
+    border-color: #ff4757;
   }
 
   .auth-submit {
@@ -1082,7 +1053,7 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 11px 0;
+    padding: 11px 11px;
     background: var(--white);
     border: 1.5px solid var(--canvas-alt);
     border-radius: 999px;
@@ -1137,6 +1108,32 @@
       opacity: 1;
     }
   }
+
+.yandex-music-mark{
+  width:24px;
+  height:24px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 24px;
+  border-radius:7px;
+  font-size:14px;
+  font-weight:800;
+  line-height:1;
+  background:currentColor;
+  color:var(--bg, #fff);
+  box-shadow:inset 0 0 0 2px currentColor;
+}
+
+.auth-social-btn{
+  width:100%;
+}
+
+/* ===== Responsive layout ===== */
+html,body{width:100%;min-width:0;overflow-x:hidden}img,svg,video,canvas{max-width:100%;height:auto}button,input,textarea,select{max-width:100%}
+@media (max-width:1100px){.container,.hero,.section,.header-inner,.footer-inner{max-width:calc(100% - 40px)}.hero{gap:36px}.hero h1{font-size:clamp(42px,6vw,72px)}.grid,.cards,.features{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){.container,.hero,.section,.header-inner,.footer-inner{width:calc(100% - 32px);max-width:none}.header-inner,.nav,.navigation{flex-wrap:wrap;gap:14px}.header-inner{min-height:auto;padding-top:14px;padding-bottom:14px}.nav,.navigation{width:100%;justify-content:center;order:3}.hero,.hero-content,.hero-inner,.hero-grid,.about-grid,.content-grid{grid-template-columns:1fr!important;flex-direction:column}.hero{min-height:auto;padding-top:56px;padding-bottom:56px;text-align:center}.hero h1{font-size:clamp(38px,11vw,58px);line-height:1.05}.hero p{max-width:620px;margin-left:auto;margin-right:auto}.hero-actions,.cta-actions,.buttons,.form-actions{flex-direction:column;align-items:stretch}.hero-actions>*,.cta-actions>*,.buttons>*,.form-actions>*{width:100%}.grid,.cards,.features{grid-template-columns:1fr}.section{padding-top:56px;padding-bottom:56px}.section-title,.section h2{font-size:clamp(30px,8vw,46px)}.modal-overlay{padding:16px;align-items:flex-start;overflow-y:auto}.modal,.auth-modal{width:100%;max-width:520px;max-height:calc(100dvh - 32px);overflow-y:auto;margin:auto}.auth-form{width:100%}.auth-tabs{width:100%}.auth-tabs button{flex:1}.form-row,.fields-row,.input-row{grid-template-columns:1fr!important;flex-direction:column}}
+@media (max-width:480px){.container,.hero,.section,.header-inner,.footer-inner{width:calc(100% - 24px)}.hero{padding-top:40px;padding-bottom:40px}.hero h1{font-size:clamp(34px,12vw,48px)}.section{padding-top:42px;padding-bottom:42px}.modal-overlay{padding:8px}.modal,.auth-modal{max-height:calc(100dvh - 16px);border-radius:18px}.modal-header,.modal-body,.auth-form{padding-left:18px;padding-right:18px}input,textarea,select,button{font-size:16px}}
 </style>
 </head>
 <body>
@@ -1145,7 +1142,7 @@
   <div class="nav">
     <div class="brand">
       <svg viewBox="0 0 24 24" fill="none"><path d="M2 12c1.5-4 2.5-6 3.5-6s2 8 3.5 8 2-10 3.5-10 2 12 3.5 12 2-8 3.5-8 2 4 3.5 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Волна
+      Music Match
     </div>
     <nav class="nav-links">
       <a href="#how">Как это работает</a>
@@ -1311,14 +1308,14 @@
   <div class="wrap footer-row">
     <div class="brand" style="font-size:18px;">
       <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M2 12c1.5-4 2.5-6 3.5-6s2 8 3.5 8 2-10 3.5-10 2 12 3.5 12 2-8 3.5-8 2 4 3.5 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Волна
+      Music Match
     </div>
     <div class="footer-links">
       <a href="#how">Как это работает</a>
       <a href="#showcase">Вкус в деталях</a>
       <a href="#cta">Истории</a>
     </div>
-    <div class="footer-copy">© 2026 Волна</div>
+    <div class="footer-copy">© 2026 Music Match</div>
   </div>
 </footer>
 
@@ -1357,47 +1354,24 @@
         <input type="text" id="registerName" placeholder="Как тебя называть" autocomplete="name" required>
       </div>
       <div class="auth-field">
-        <label>Пол</label>
-        <div class="gender-group">
-          <label class="gender-option">
-            <input type="radio" name="gender" value="female" checked>
-            <span>Женский</span>
-          </label>
-          <label class="gender-option">
-            <input type="radio" name="gender" value="male">
-            <span>Мужской</span>
-          </label>
-          <label class="gender-option">
-            <input type="radio" name="gender" value="other">
-            <span>Другое</span>
-          </label>
-          <label class="gender-option">
-            <input type="radio" name="gender" value="unspecified">
-            <span>Не указывать</span>
-          </label>
-        </div>
-      </div>
-      <div class="auth-field">
         <label for="registerEmail">Почта</label>
-        <input type="email" id="registerEmail" placeholder="you@mail.com" autocomplete="email" required>
+        <input type="email" id="registerEmail" placeholder="you@mail.com" autocomplete="email" required aria-describedby="registerEmailError">
+        <span class="field-error" id="registerEmailError" aria-live="polite"></span>
       </div>
       <div class="auth-field">
         <label for="registerPassword">Пароль</label>
-        <input type="password" id="registerPassword" placeholder="Минимум 8 символов" autocomplete="new-password" minlength="8" required>
+        <input type="password" id="registerPassword" placeholder="Минимум 8 символов" autocomplete="new-password" minlength="8" required aria-describedby="registerPasswordError">
+        <span class="field-error" id="registerPasswordError" aria-live="polite"></span>
       </div>
       <button type="submit" class="btn auth-submit">Создать аккаунт</button>
-      <span class="auth-hint">Регистрируясь, ты соглашаешься с условиями использования Волны.</span>
+      <span class="auth-hint">Регистрируясь, ты соглашаешься с условиями использования Music Match.</span>
     </form>
 
     <div class="auth-divider">или</div>
     <div class="auth-social">
-      <button type="button" class="auth-social-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
-        Продолжить через почту
-      </button>
-      <button type="button" class="auth-social-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18V5l12-2v13" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-        Продолжить со Spotify-аккаунтом
+      <button type="button" class="auth-social-btn" id="yandexMusicAuthBtn" aria-label="Продолжить с аккаунтом Яндекс Музыки">
+        <!-- <span class="yandex-music-mark" aria-hidden="true">Я</span> -->
+        Продолжить с аккаунтом Яндекс Музыки
       </button>
     </div>
   </div>
@@ -1538,13 +1512,61 @@ async function handleLogin(e) {
   }
 }
 
+function setFieldError(input, errorElement, message = '') {
+  input.classList.toggle('invalid', Boolean(message));
+  input.setAttribute('aria-invalid', message ? 'true' : 'false');
+  errorElement.textContent = message;
+}
+
+function validateRegisterEmail() {
+  const input = document.getElementById('registerEmail');
+  const errorElement = document.getElementById('registerEmailError');
+  const value = input.value.trim();
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  let message = '';
+  if (!value) message = 'Укажи почту.';
+  else if (!emailPattern.test(value)) message = 'Введи корректный адрес почты, например you@mail.com.';
+
+  setFieldError(input, errorElement, message);
+  return !message;
+}
+
+function validateRegisterPassword() {
+  const input = document.getElementById('registerPassword');
+  const errorElement = document.getElementById('registerPasswordError');
+  const value = input.value;
+
+  let message = '';
+  if (!value) message = 'Придумай пароль.';
+  else if (value.length < 8) message = 'Пароль должен содержать минимум 8 символов.';
+  else if (!/[A-Za-zА-Яа-яЁё]/.test(value) || !/\d/.test(value)) message = 'Добавь в пароль хотя бы одну букву и одну цифру.';
+
+  setFieldError(input, errorElement, message);
+  return !message;
+}
+
+const registerEmailInput = document.getElementById('registerEmail');
+const registerPasswordInput = document.getElementById('registerPassword');
+registerEmailInput.addEventListener('blur', validateRegisterEmail);
+registerEmailInput.addEventListener('input', () => {
+  if (registerEmailInput.classList.contains('invalid')) validateRegisterEmail();
+});
+registerPasswordInput.addEventListener('blur', validateRegisterPassword);
+registerPasswordInput.addEventListener('input', () => {
+  if (registerPasswordInput.classList.contains('invalid')) validateRegisterPassword();
+});
+
 async function handleRegister(e) {
   e.preventDefault();
 
-  const username = document.getElementById('registerName').value;
-  const email = document.getElementById('registerEmail').value;
+  const username = document.getElementById('registerName').value.trim();
+  const email = document.getElementById('registerEmail').value.trim();
   const password = document.getElementById('registerPassword').value;
-  const gender = document.querySelector('input[name="gender"]:checked').value;
+
+  const emailIsValid = validateRegisterEmail();
+  const passwordIsValid = validateRegisterPassword();
+  if (!emailIsValid || !passwordIsValid) return;
 
   try {
     const response = await fetch(`${API_BASE_URL}/api/register`, {
@@ -1556,7 +1578,6 @@ async function handleRegister(e) {
         username,
         email,
         password,
-        gender,
         age: null,
         bio: ''
       })
