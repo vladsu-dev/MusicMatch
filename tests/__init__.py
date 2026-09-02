@@ -1,1 +1,1 @@
-"""MusicMatch test suite."""
+"""Тестовый набор для MusicMatch."""

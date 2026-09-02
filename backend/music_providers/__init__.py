@@ -1,1 +1,1 @@
-"""Music provider abstractions and implementations."""
+"""Абстракции и реализации музыкальных провайдеров."""

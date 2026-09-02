@@ -20,10 +20,10 @@ _session_factory = None
 
 
 def get_engine():
-    """Create the PostgreSQL engine on first real database use.
+    """Создаёт PostgreSQL-движок при первом реальном обращении к базе.
 
-    Lazy initialization keeps model-only imports and unit tests independent of
-    the PostgreSQL driver and of a developer's local database configuration.
+    Ленивое создание позволяет импортировать модели и запускать юнит-тесты
+    без зависимости от драйвера PostgreSQL и локальной конфигурации базы.
     """
     global _engine
     if _engine is None:
@@ -47,7 +47,7 @@ def get_engine():
 
 
 def SessionLocal():
-    """Return a new SQLAlchemy session bound to the configured database."""
+    """Возвращает новую SQLAlchemy-сессию, привязанную к конфигурируемой базе."""
     global _session_factory
     if _session_factory is None:
         _session_factory = sessionmaker(
@@ -71,9 +71,9 @@ def get_db():
 
 
 def init_db():
-    """Create missing tables for local development.
+    """Создаёт отсутствующие таблицы для локальной разработки.
 
-    Production schema changes should be managed with Alembic migrations.
+    Изменения схемы в production должны управляться через Alembic-миграции.
     """
     from backend import models  # noqa: F401
 
