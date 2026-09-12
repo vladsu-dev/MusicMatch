@@ -114,7 +114,7 @@ select {
   font-size: 17px;
   font-weight: 600;
   letter-spacing: -0.02em;
-  white-space: nowrap; /* название не должно переноситься на узком экране */
+  white-space: nowrap;
 }
 
 .logo::before {
@@ -137,11 +137,20 @@ select {
   display: flex;
   align-items: center;
   gap: 9px;
-  padding-right: 8px;
+  padding: 4px 8px 4px 4px;
   margin-right: 4px;
+  border: none;
   border-right: 1px solid var(--line);
+  border-radius: 8px;
+  background: none;
   color: var(--muted);
   font-size: 14px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.header-user:hover {
+  background: #f2efea;
+  color: var(--ink);
 }
 
 .avatar {
@@ -569,14 +578,23 @@ select {
 }
 
 .match-list li {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  padding: 10px 8px;
-  border-radius: 12px;
+  padding: 0;
 }
 
-.match-list li:hover {
+.match-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 13px;
+  padding: 10px 8px;
+  border: none;
+  border-radius: 12px;
+  background: none;
+  color: inherit;
+  text-align: left;
+}
+
+.match-row:hover {
   background: #f7f5f1;
 }
 
@@ -597,6 +615,235 @@ select {
   font-size: 14px;
 }
 
+/* ---------- личный кабинет ---------- */
+
+.account {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 28px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.back-link:hover {
+  color: var(--ink);
+}
+
+.account-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.account-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.account-name {
+  margin: 0 0 4px;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.account-genre {
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.account-stats {
+  display: flex;
+  gap: 28px;
+  margin: 32px 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.account-stat b {
+  display: block;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.account-stat span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.account-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ---------- мини-чат совпадения (модалка в правом низу окна) ---------- */
+
+.chat-widget {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  max-height: 440px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: rise 0.2s ease;
+}
+
+.chat-widget-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.chat-widget-header img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--line);
+}
+
+.chat-widget-header .info {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-widget-header strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.chat-widget-header span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.chat-widget-close {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.chat-widget-close:hover {
+  background: #f2efea;
+  color: var(--ink);
+}
+
+.chat-widget-messages {
+  flex: 1;
+  min-height: 200px;
+  max-height: 280px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.chat-widget-empty {
+  margin: auto;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.chat-bubble-row {
+  display: flex;
+}
+
+.chat-bubble-row.me {
+  justify-content: flex-end;
+}
+
+.chat-bubble {
+  max-width: 78%;
+  padding: 9px 12px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
+.chat-bubble-row.them .chat-bubble {
+  background: #f2efea;
+  color: var(--ink);
+  border-bottom-left-radius: 4px;
+}
+
+.chat-bubble-row.me .chat-bubble {
+  background: var(--ink);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-widget-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.chat-widget-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  outline: none;
+  font-size: 13.5px;
+}
+
+.chat-widget-form input:focus {
+  border-color: var(--ink);
+}
+
+.chat-widget-send {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+}
+
+.chat-widget-send:disabled {
+  opacity: 0.4;
+}
+
 .center-note {
   padding: 60px 20px;
   text-align: center;
@@ -608,7 +855,7 @@ select {
     padding: 10px 14px;
   }
 
-  /* На узком экране шапка должна помещаться в одну строку. */
+  /* чтобы шапка на узком экране в 1 строку помещалась */
   .header-user {
     display: none;
   }
@@ -633,5 +880,23 @@ select {
 
   .modal {
     padding: 24px 20px;
+  }
+
+  .chat-widget {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    width: auto;
+  }
+
+  .account-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .account-stats {
+    gap: 20px;
+    flex-wrap: wrap;
   }
 }
