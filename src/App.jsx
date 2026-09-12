@@ -6,6 +6,8 @@ import AuthModal from './components/AuthModal.jsx';
 import ProfileModal from './components/ProfileModal.jsx';
 import MatchesModal from './components/MatchesModal.jsx';
 import Deck from './components/Deck.jsx';
+import AccountPage from './components/AccountPage.jsx';
+import ChatWidget from './components/ChatWidget.jsx';
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -13,6 +15,14 @@ export default function App() {
   const [modal, setModal] = useState(null);
   const [judged, setJudged] = useState([]);
   const [matches, setMatches] = useState([]);
+
+  // Какой экран показан в <main>: лента анкет или личный кабинет.
+  // Это настоящая навигация внутри приложения, а не модальное окно.
+  const [view, setView] = useState('deck');
+
+  // Совпадение, с которым сейчас открыт мини-чат (ChatWidget) в правом
+  // нижнем углу экрана. null — виджет не показан.
+  const [activeChat, setActiveChat] = useState(null);
 
   const feed = useMemo(() => {
     const rest = DEMO_PROFILES.filter((item) => !judged.includes(item.id)).map((item) => ({
@@ -28,6 +38,8 @@ export default function App() {
     setModal(null);
     setJudged([]);
     setMatches([]);
+    setView('deck');
+    setActiveChat(null);
   }
 
   function onAuthSuccess(user) {
@@ -62,11 +74,19 @@ export default function App() {
         <div className="header-actions">
           {session ? (
             <>
+              {/* Фото + ник — теперь кнопка. Клик переключает view на
+                  'account' (настоящий переход в личный кабинет, не
+                  модалка). Обратно ведёт кнопка "Назад к анкетам"
+                  внутри AccountPage. */}
               {profile && (
-                <div className="header-user">
+                <button
+                  className="header-user"
+                  aria-pressed={view === 'account'}
+                  onClick={() => setView('account')}
+                >
                   <img className="avatar" src={profile.photo} alt="" />
                   <span>{profile.name}</span>
-                </div>
+                </button>
               )}
               {/* Открывает окно "Совпадения" (MatchesModal). Бейдж с числом
                   показывается, только если есть хотя бы один взаимный лайк. */}
@@ -106,16 +126,24 @@ export default function App() {
               Остался один шаг — <em>ваша анкета</em>
             </h1>
             <p>Имя, фото и любимый жанр. После этого откроются анкеты других участников.</p>
-            {/* Тот же переход, что и кнопка "Заполнить анкету" в шапке, —
-                просто более заметный призыв к действию на этом экране. */}
+
             <button className="btn btn-lg" onClick={() => setModal('profile')}>
               Заполнить анкету
             </button>
           </section>
         )}
 
-        {session && profile && (
+        {session && profile && view === 'deck' && (
           <Deck feed={feed} onDecide={onDecide} onRestart={restartFeed} />
+        )}
+
+        {session && profile && view === 'account' && (
+          <AccountPage
+            profile={profile}
+            stats={{ viewed: judged.length, matches: matches.length }}
+            onBack={() => setView('deck')}
+            onEdit={() => setModal('profile')}
+          />
         )}
       </main>
 
@@ -134,7 +162,18 @@ export default function App() {
           onSaved={onProfileSaved}
         />
       )}
-      {modal === 'matches' && <MatchesModal matches={matches} onClose={() => setModal(null)} />}
+      {modal === 'matches' && (
+        <MatchesModal
+          matches={matches}
+          onClose={() => setModal(null)}
+          onSelectMatch={(match) => setActiveChat(match)}
+        />
+      )}
+
+      {/* Плавающий мини-чат в правом нижнем углу экрана. Рендерится
+          независимо от modal/view, поэтому остаётся на экране поверх
+          и ленты анкет, и личного кабинета, и окна "Совпадения". */}
+      {activeChat && <ChatWidget match={activeChat} onClose={() => setActiveChat(null)} />}
     </>
   );
 }
