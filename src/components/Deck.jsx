@@ -1,38 +1,52 @@
 import { useCallback, useEffect, useState } from 'react';
 import Modal from './Modal.jsx';
 
-export default function Deck({ feed, onDecide, onRestart }) {
+export default function Deck({ feed, onDecide, onRestart, keyboardEnabled = true }) {
   const [leaving, setLeaving] = useState(null);
   const [matched, setMatched] = useState(null);
+
+  const [error, setError] = useState('');
+  const [restarting, setRestarting] = useState(false);
 
   const current = feed[0];
   const next = feed[1];
 
   const decide = useCallback(
-    (action) => {
+    async (action) => {
       if (!current || leaving) return;
       setLeaving(action);
-      setTimeout(() => {
-        const match = onDecide(current, action);
-        setLeaving(null);
+      setError('');
+      try {
+        const match = await onDecide(current, action);
         if (match) setMatched(match);
-      }, 320);
+      } catch (err) { setError(err.message); }
+      finally { setLeaving(null); }
     },
     [current, leaving, onDecide]
   );
 
+  async function restart() {
+    if (restarting) return;
+    setRestarting(true);
+    setError('');
+    try { await onRestart(); }
+    catch (err) { setError(err.message); }
+    finally { setRestarting(false); }
+  }
+
   useEffect(() => {
     const onKey = (event) => {
-      if (matched) return;
+      if (matched || !keyboardEnabled || event.repeat || event.target.closest('input, textarea, select, button, [contenteditable="true"]')) return;
       if (event.key === 'ArrowRight') decide('like');
       if (event.key === 'ArrowLeft') decide('skip');
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [decide, matched]);
+  }, [decide, matched, keyboardEnabled]);
 
   return (
     <div className="deck-wrap">
+      {error && <p className="form-error" role="alert">{error}</p>}
       {current ? (
         <>
           <div className="deck">
@@ -41,10 +55,6 @@ export default function Deck({ feed, onDecide, onRestart }) {
           </div>
 
           <div className="deck-actions">
-            {/* Пропуск текущей карточки. Запускает анимацию улёта влево,
-                затем через decide -> onDecide убирает анкету из ленты без
-                следа в matches. disabled на время анимации, чтобы нельзя
-                было кликнуть дважды по одной карточке. */}
             <button
               className="action"
               onClick={() => decide('skip')}
@@ -54,9 +64,6 @@ export default function Deck({ feed, onDecide, onRestart }) {
             >
               ✕
             </button>
-            {/* Лайк текущей карточки. Если у анкеты стоит likesYou: true
-                (см. profiles.js), onDecide вернёт её, и ниже откроется
-                окно "Взаимная симпатия". Иначе просто уходит в ленту. */}
             <button
               className="action like"
               onClick={() => decide('like')}
@@ -73,10 +80,8 @@ export default function Deck({ feed, onDecide, onRestart }) {
         <div className="empty-state">
           <h3>Анкеты закончились</h3>
           <p>Вы просмотрели всех участников.</p>
-          {/* Вызывает onRestart из App.jsx: очищает judged и matches,
-              возвращая в ленту все анкеты заново. */}
-          <button className="btn btn-ghost" onClick={onRestart}>
-            Показать снова
+          <button className="btn btn-ghost" onClick={restart} disabled={restarting}>
+            {restarting ? 'Загрузка…' : 'Показать пропущенные'}
           </button>
         </div>
       )}
@@ -89,8 +94,6 @@ export default function Deck({ feed, onDecide, onRestart }) {
             <p className="subtitle">
               {matched.name} тоже поставил(а) вам лайк. Любимый жанр — {matched.genre}.
             </p>
-            {/* Просто закрывает это окно (setMatched(null)) и возвращает
-                к ленте — сама анкета уже убрана из feed предыдущим decide. */}
             <button className="btn" onClick={() => setMatched(null)}>
               Листать дальше
             </button>

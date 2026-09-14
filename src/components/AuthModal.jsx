@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { api } from '../api.js';
 import Modal from './Modal.jsx';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -9,25 +10,34 @@ export default function AuthModal({ onClose, onSuccess, initialTab = 'register' 
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  const [busy, setBusy] = useState(false);
+
   const isRegister = tab === 'register';
 
   const switchTab = (next) => {
+    if (busy) return;
     setTab(next);
     setError('');
   };
 
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault();
+    if (busy) return;
     if (!EMAIL_RE.test(email.trim())) return setError('Введите корректный email');
-    if (password.length < 6) return setError('Пароль должен быть не короче 6 символов');
+    if (password.length < 8 || password.length > 128) return setError('Пароль должен содержать от 8 до 128 символов');
     setError('');
-    onSuccess({ email: email.trim() });
+    setBusy(true);
+    try {
+      const result = await api(isRegister ? '/auth/register' : '/auth/login', {
+        method: 'POST', body: { email: email.trim(), password },
+      });
+      onSuccess(result);
+    } catch (err) { setError(err.message); }
+    finally { setBusy(false); }
   }
 
   return (
-    <Modal onClose={onClose}>
-      {/* Переключатели вкладок внутри этого же окна: никуда не ведут,
-          только меняют локальный tab и, соответственно, текст формы ниже. */}
+    <Modal onClose={() => { if (!busy) onClose(); }}>
       <div className="tabs">
         <button aria-selected={isRegister} onClick={() => switchTab('register')}>
           Регистрация
@@ -40,7 +50,7 @@ export default function AuthModal({ onClose, onSuccess, initialTab = 'register' 
       <h2>{isRegister ? 'Создать аккаунт' : 'С возвращением'}</h2>
       <p className="subtitle">
         {isRegister
-          ? 'Демонстрационный интерфейс: данные никуда не отправляются.'
+          ? 'Создайте аккаунт, чтобы сохранить анкету и знакомиться.'
           : 'Введите данные вашего аккаунта.'}
       </p>
 
@@ -67,28 +77,24 @@ export default function AuthModal({ onClose, onSuccess, initialTab = 'register' 
             id="auth-password"
             type="password"
             autoComplete={isRegister ? 'new-password' : 'current-password'}
-            placeholder={isRegister ? 'минимум 6 символов' : '••••••••'}
+            placeholder={isRegister ? 'от 8 до 128 символов' : '••••••••'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            minLength={6}
+            minLength={8}
+            maxLength={128}
             required
           />
         </div>
 
         <div className="form-footer">
-          {/* Отправляет форму (submit сработает через onSubmit формы).
-              При успешной проверке вызывает onSuccess из App.jsx, а тот
-              закрывает это окно и открывает анкету (ProfileModal). */}
-          <button className="btn" type="submit">
-            {isRegister ? 'Зарегистрироваться' : 'Войти'}
+          <button className="btn" type="submit" disabled={busy}>
+            {busy ? 'Подождите…' : isRegister ? 'Зарегистрироваться' : 'Войти'}
           </button>
         </div>
       </form>
 
       <p className="hint">
         {isRegister ? 'Уже есть аккаунт? ' : 'Ещё нет аккаунта? '}
-        {/* Второй способ переключить вкладку, тот же switchTab, что и
-            кнопки сверху — просто продублирован рядом с формой. */}
         <button className="btn-plain" onClick={() => switchTab(isRegister ? 'login' : 'register')}>
           {isRegister ? 'Войти' : 'Зарегистрироваться'}
         </button>

@@ -30,28 +30,37 @@ export default function ProfileModal({ profile, genres, onClose, onSaved }) {
   const [photo, setPhoto] = useState(profile?.photo || '');
   const [error, setError] = useState('');
 
+  const [busy, setBusy] = useState(false);
+  const [reading, setReading] = useState(false);
+
   async function pickPhoto(event) {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file || busy || reading) return;
+    if (!file.type.startsWith('image/') || file.size > 10 * 1024 * 1024) return setError('Выберите изображение размером до 10 МБ');
+    setReading(true);
     setError('');
     try {
       setPhoto(await readAndResize(file));
     } catch (err) {
       setError(err.message);
-    }
+    } finally { setReading(false); }
   }
 
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault();
+    if (busy || reading) return;
     if (name.trim().length < 2) return setError('Укажите имя (минимум 2 символа)');
     if (!photo) return setError('Добавьте фото');
     if (!genre) return setError('Выберите музыкальный жанр');
     setError('');
-    onSaved({ name: name.trim(), genre, photo });
+    setBusy(true);
+    try { await onSaved({ name: name.trim(), genre, photo }); }
+    catch (err) { setError(err.message); }
+    finally { setBusy(false); }
   }
 
   return (
-    <Modal onClose={onClose} width={480}>
+    <Modal onClose={() => { if (!busy && !reading) onClose(); }} width={480}>
       <h2>{profile ? 'Моя анкета' : 'Заполните анкету'}</h2>
       <p className="subtitle">Так вас увидят другие пользователи.</p>
 
@@ -81,9 +90,6 @@ export default function ProfileModal({ profile, genres, onClose, onSaved }) {
               <div className="photo-preview empty">+</div>
             )}
             <div>
-              {/* Настоящее поле выбора файла — скрыто стилями, потому что
-                  системный вид input[type=file] нельзя оформить кнопкой ниже.
-                  Открытие диалога "Выбрать файл" запускает соседняя кнопка. */}
               <input
                 id="profile-photo"
                 type="file"
@@ -91,9 +97,6 @@ export default function ProfileModal({ profile, genres, onClose, onSaved }) {
                 onChange={pickPhoto}
                 style={{ display: 'none' }}
               />
-              {/* type="button" — не отправляет форму, а просто кликает по
-                  скрытому input выше и открывает системный диалог выбора
-                  файла. Сам выбор файла обрабатывает pickPhoto. */}
               <button
                 type="button"
                 className="btn btn-ghost"
@@ -108,9 +111,6 @@ export default function ProfileModal({ profile, genres, onClose, onSaved }) {
         <div className="field">
           <label>Музыкальный жанр</label>
           <div className="genre-grid">
-            {/* Одна кнопка-"таблетка" на каждый жанр из genres.js. Клик
-                просто перезаписывает genre — выбор всегда единственный,
-                aria-pressed подсвечивает активную. Никуда не ведёт. */}
             {genres.map((item) => (
               <button
                 key={item}
@@ -126,11 +126,8 @@ export default function ProfileModal({ profile, genres, onClose, onSaved }) {
         </div>
 
         <div className="form-footer">
-          {/* Отправляет форму. После проверок вызывает onSaved из App.jsx,
-              который сохраняет анкету и закрывает окно — дальше на экране
-              появляется лента (Deck). */}
-          <button className="btn" type="submit">
-            Сохранить анкету
+          <button className="btn" type="submit" disabled={busy || reading}>
+            {reading ? 'Обработка фото…' : busy ? 'Сохранение…' : 'Сохранить анкету'}
           </button>
         </div>
       </form>
