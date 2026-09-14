@@ -1,1 +1,0 @@
-"""Пакет backend приложения MusicMatch."""
