@@ -14,7 +14,7 @@ test('two users register, match, chat, reload and log out', async ({ browser }) 
     await page.getByRole('button', { name: 'Регистрация', exact: true }).click();
     await page.getByLabel('Email', { exact: true }).fill(email);
     await page.getByLabel('Пароль', { exact: true }).fill('MusicMatch-e2e-123');
-    await page.getByRole('button', { name: 'Зарегистрироваться', exact: true }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Зарегистрироваться', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Заполните анкету' })).toBeVisible();
     await page.getByLabel('Имя', { exact: true }).fill(name);
     // Generate a real PNG in the browser; the UI resizes and converts it to JPEG.
