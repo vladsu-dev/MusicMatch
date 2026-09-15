@@ -1,0 +1,20 @@
+{% extends "music/base.html" %}
+{% block title %}Чат с {{ partner.name }} — MusicMatch{% endblock %}
+{% block content %}
+<section class="chat-layout card-panel">
+  <header class="chat-header">
+    <img src="{{ partner.photo }}" alt="{{ partner.name }}">
+    <div><h1>{{ partner.name }}</h1><p class="muted">{{ partner.genre_id }}</p></div>
+  </header>
+  <iframe class="chat-frame" title="История сообщений" src="{% url 'chat_messages' match.id %}#latest"></iframe>
+  <form class="message-form" method="post">
+    {% csrf_token %}
+    {{ form.submission_id }}
+    <label class="message-text"><span>Сообщение</span>
+      {{ form.text }}
+    </label>
+    {% if form.text.errors %}<span class="field-error">{{ form.text.errors|striptags }}</span>{% endif %}
+    <button class="primary-button" type="submit">Отправить</button>
+  </form>
+</section>
+{% endblock %}

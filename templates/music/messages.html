@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% if live %}<meta http-equiv="refresh" content="3">{% endif %}
+  <link rel="stylesheet" href="/static/music/styles.css">
+  <title>Сообщения</title>
+</head>
+<body class="messages-body">
+  <main class="messages-list">
+    {% if messages_list %}
+      {% with first=messages_list.0 %}<p class="older-link"><a href="?before={{ first.id }}">Показать более старые</a></p>{% endwith %}
+      {% for message in messages_list %}
+        <article class="chat-bubble-row {% if message.sender_id == member.id %}me{% else %}them{% endif %}">
+          <div class="chat-bubble">
+            <p>{{ message.text }}</p>
+            <time datetime="{{ message.created_at|date:'c' }}">{{ message.created_at|date:'d.m.Y H:i' }}</time>
+          </div>
+        </article>
+      {% endfor %}
+    {% else %}
+      <p class="empty-line">Сообщений пока нет. Напишите первым.</p>
+    {% endif %}
+    <span id="latest"></span>
+  </main>
+</body>
+</html>

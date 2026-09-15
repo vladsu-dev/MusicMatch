@@ -1,0 +1,16 @@
+{% extends "music/base.html" %}
+{% block title %}Аккаунт — MusicMatch{% endblock %}
+{% block content %}
+<section class="card-panel narrow">
+  <h1>Аккаунт</h1>
+  <p class="muted">{{ member.email }}</p>
+  {% if profile %}<p>Анкета: <strong>{{ profile.name }}</strong>, жанр {{ profile.genre_id }}.</p>{% endif %}
+  <dl class="stats-grid">
+    <div><dt>Лайков</dt><dd>{{ stats.likes }}</dd></div>
+    <div><dt>Пропусков</dt><dd>{{ stats.skips }}</dd></div>
+    <div><dt>Мэтчей</dt><dd>{{ stats.matches }}</dd></div>
+    <div><dt>Сообщений</dt><dd>{{ stats.messages }}</dd></div>
+    <div><dt>Активных сессий</dt><dd>{{ stats.sessions }}</dd></div>
+  </dl>
+</section>
+{% endblock %}

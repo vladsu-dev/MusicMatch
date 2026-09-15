@@ -1,0 +1,20 @@
+{% extends "music/base.html" %}
+{% block title %}MusicMatch — поиск музыкальных совпадений{% endblock %}
+{% block content %}
+<section class="hero card-panel">
+  <div>
+    <p class="eyebrow">Учебный проект на Python</p>
+    <h1>Найди людей с похожим музыкальным вкусом</h1>
+    <p class="lead">Создайте анкету, выбирайте понравившиеся профили и открывайте чат, когда симпатия взаимная.</p>
+    <div class="actions">
+      <a class="button-link" href="{% url 'signup' %}">Начать</a>
+      <a class="button-link secondary" href="{% url 'login' %}">У меня уже есть аккаунт</a>
+    </div>
+  </div>
+</section>
+<section class="grid three">
+  <article class="info-card"><h2>Анкета</h2><p>Имя, любимый жанр и фото хранятся в PostgreSQL.</p></article>
+  <article class="info-card"><h2>Мэтчи</h2><p>Чат появляется только после взаимного лайка.</p></article>
+  <article class="info-card"><h2>JWT</h2><p>Вход работает через httpOnly cookies с access и refresh токенами.</p></article>
+</section>
+{% endblock %}

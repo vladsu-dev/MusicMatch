@@ -1,0 +1,33 @@
+{% extends "music/base.html" %}
+{% block title %}Лента — MusicMatch{% endblock %}
+{% block content %}
+<section class="feed-head">
+  <div>
+    <p class="eyebrow">Лента</p>
+    <h1>Выберите, с кем хотите познакомиться</h1>
+  </div>
+  <form method="post" action="{% url 'reset_feed' %}">{% csrf_token %}<button class="ghost-button" type="submit">Вернуть пропущенных</button></form>
+</section>
+{% if profiles %}
+  <div class="deck">
+    {% for profile in profiles %}
+      <article class="profile-card card-panel">
+        <img src="{{ profile.photo }}" alt="Фото {{ profile.name }}">
+        <div class="profile-content">
+          <h2>{{ profile.name }}</h2>
+          <p class="genre-chip">{{ profile.genre_id }}</p>
+          <div class="decision-row">
+            <form method="post" action="{% url 'decision' profile.user_id %}">{% csrf_token %}<input type="hidden" name="action" value="skip"><button class="secondary-button" type="submit">Пропустить</button></form>
+            <form method="post" action="{% url 'decision' profile.user_id %}">{% csrf_token %}<input type="hidden" name="action" value="like"><button class="primary-button" type="submit">Нравится</button></form>
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <section class="empty-state card-panel">
+    <h2>Пока нет новых анкет</h2>
+    <p>Можно вернуть пропущенные профили или подождать новых пользователей.</p>
+  </section>
+{% endif %}
+{% endblock %}
