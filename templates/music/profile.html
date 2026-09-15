@@ -1,0 +1,31 @@
+{% extends "music/base.html" %}
+{% block title %}Анкета — MusicMatch{% endblock %}
+{% block content %}
+<section class="card-panel narrow">
+  <h1>{% if profile %}Редактировать анкету{% else %}Заполнить анкету{% endif %}</h1>
+  <p class="muted">Анкета нужна, чтобы другие пользователи видели вас в ленте.</p>
+  <form method="post" enctype="multipart/form-data" class="stacked-form" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <label>
+      <span>{{ form.name.label }}</span>
+      {{ form.name }}
+      {% if form.name.errors %}<span class="field-error">{{ form.name.errors|striptags }}</span>{% endif %}
+    </label>
+    <fieldset class="genre-fieldset">
+      <legend>{{ form.genre.label }}</legend>
+      {{ form.genre }}
+      {% if form.genre.errors %}<span class="field-error">{{ form.genre.errors|striptags }}</span>{% endif %}
+    </fieldset>
+    {% if profile.photo %}
+      <figure class="photo-preview"><img src="{{ profile.photo }}" alt="Текущее фото {{ profile.name }}"><figcaption>Текущее фото. Новое можно не загружать.</figcaption></figure>
+    {% endif %}
+    <label>
+      <span>{{ form.photo.label }}</span>
+      {{ form.photo }}
+      {% if form.photo.errors %}<span class="field-error">{{ form.photo.errors|striptags }}</span>{% endif %}
+    </label>
+    <button class="primary-button" type="submit">Сохранить</button>
+  </form>
+</section>
+{% endblock %}

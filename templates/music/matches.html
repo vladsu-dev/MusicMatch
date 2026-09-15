@@ -1,0 +1,26 @@
+{% extends "music/base.html" %}
+{% block title %}Мэтчи — MusicMatch{% endblock %}
+{% block content %}
+<meta http-equiv="refresh" content="10">
+<section class="card-panel">
+  <h1>Ваши мэтчи</h1>
+  <p class="muted">Страница обновляется автоматически каждые 10 секунд, чтобы показать новые взаимные лайки.</p>
+  {% if matches %}
+    <div class="match-list">
+      {% for match in matches %}
+        {% if match.user_low_id == member.id %}
+          {% with partner=match.user_high.profile %}
+            <a class="match-row" href="{% url 'chat' match.id %}"><img src="{{ partner.photo }}" alt="{{ partner.name }}"><span><strong>{{ partner.name }}</strong><small>{{ partner.genre_id }}</small></span></a>
+          {% endwith %}
+        {% else %}
+          {% with partner=match.user_low.profile %}
+            <a class="match-row" href="{% url 'chat' match.id %}"><img src="{{ partner.photo }}" alt="{{ partner.name }}"><span><strong>{{ partner.name }}</strong><small>{{ partner.genre_id }}</small></span></a>
+          {% endwith %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="empty-line">Мэтчей пока нет. Вернитесь в ленту и поставьте лайки.</p>
+  {% endif %}
+</section>
+{% endblock %}

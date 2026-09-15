@@ -1,0 +1,38 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}MusicMatch{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'music/styles.css' %}">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="{% url 'home' %}">MusicMatch</a>
+    <nav class="top-nav" aria-label="Основная навигация">
+      {% if member %}
+        <a href="{% url 'home' %}">Лента</a>
+        <a href="{% url 'matches' %}">Мэтчи{% if match_count %} <span class="pill">{{ match_count }}</span>{% endif %}</a>
+        <a href="{% url 'profile' %}">Анкета</a>
+        <a href="{% url 'account' %}">Аккаунт</a>
+        <form class="inline-form" method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Выйти</button></form>
+      {% else %}
+        <a href="{% url 'login' %}">Войти</a>
+        <a class="button-link small" href="{% url 'signup' %}">Создать аккаунт</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="page-shell">
+    {% if messages %}
+      <section class="notices" aria-live="polite">
+        {% for message in messages %}<p class="notice {{ message.tags }}">{{ message }}</p>{% endfor %}
+      </section>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">Python · Django · PostgreSQL · JWT</footer>
+</body>
+</html>
